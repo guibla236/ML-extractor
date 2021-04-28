@@ -1,0 +1,5 @@
+*.vscode
+*.pycache
+extractor_cotizaciones.py
+MercLib.py
+ML_req.py

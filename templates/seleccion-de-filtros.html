@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    <title>Buscador de Mercado Libre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+    <div class="card text-center">
+        <div class="card-header">
+            Buscador de Mercado Libre
+        </div>
+        <h4 class="card-title">
+            Para poder obtener estadísticas de los productos disponibles en Mercado Libre, primero necesitamos obtener
+            todos los resultados.
+        </h4>
+        <h5 class="card-title">
+            Cuánto más específica la búsqueda, menos se tarda en obtenerlos.
+        </h5>
+
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm" id="filtros_cards">
+                        <div class="card">
+                            <div class="card-title">
+                                <hr />
+                                Filtros
+                                <hr />
+                            </div>
+
+                            <div class="card-body">
+                                {% for option in options.keys() %}
+                                <div class="card">
+                                    <div class="card-title">
+                                        <div class="option-name">
+                                            {{ option }} <i class="bi bi-arrow-down-square-fill"
+                                                style="float:right;"></i>
+                                        </div>
+
+                                    </div>
+                                    <div class="filters" style="display:none;">
+                                        <div class="card-body">
+                                            {% for filter in options.get(option).keys() %}
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item filter-name">
+                                                    <button class="btn btn-info btn-sm modificar-filtro"
+                                                        data-toggle="modal" data-target="#cargando-filtros"
+                                                        data-backdrop="static">{{ filter
+                                                        }}</button>
+                                                    <div id="link" style="display:none;">
+                                                        {{ options.get(option).get(filter) }}
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="btn btn-secondary" id="iniciar-recoleccion" data-toggle="modal"
+                                data-target="#cargando" data-backdrop="static">Recolectar datos</button>
+                        </div>
+                    </div>
+                    <div class="col-sm" style="display:none;" id="informacion_recolectada">
+                        <div class="card">
+                            <div class="card-title">
+                                <hr />
+                                Información recolectada
+                                <hr />
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <textarea class="form-control" rows="4" id="result" readonly>
+
+                                        </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="float: right;">
+                            <button class="btn btn-primary">
+                                Copiar e ir a analizar
+                            </button>
+                        </div>
+
+                    </div>
+                    {% if applied_filters %}
+                    <div class="col-sm-2">
+                        <div id="filtros">
+                            <div class="card">
+                                <div class="card-title">
+                                    <hr />
+                                    Filtros aplicados
+                                    <hr />
+                                </div>
+                                <hr />
+                                <div class="card-body">
+                                    {% for filtro in applied_filters.keys() %}
+                                    <div class="applied_filters">
+                                        <button class="btn btn-secondary modificar-filtro" data-toggle="modal"
+                                            data-target="#cargando-filtros" data-backdrop="static">
+                                            {{ filtro }} <i class="bi bi-x-circle"></i>
+                                        </button>
+                                        <div id="link" style="display:none;">
+                                            {{ applied_filters.get(filtro) }}
+                                        </div>
+                                        <hr />
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="total_data" style="display:none;">{{ total_data }}</div>
+    <div id="actual_link" style="display:none;">{{ actual_link }}</div>
+    <script>
+        $('.modal').on('shown.bs.modal', function () {
+            $(this).trigger('focus')
+        })
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        function datos_finalizados() {
+            $.ajax({
+                method: "POST",
+                contentType: "application/json",
+                url: '/pedir-datos',
+                data: JSON.stringify({
+                    //Nada
+                }),
+                success: function (data) {
+                    console.log(data);
+                    $("#result").html(JSON.stringify(data))
+                    $("#informacion_recolectada").show()
+                    $('#cargando').modal("hide");
+                    $('#filtros_cards').hide();
+                }
+            })
+        }
+        $('.card-title').click(function () {
+            if ($(this).siblings().is(":visible")) {
+                console.log("if")
+                $(this).siblings().slideUp().removeClass("active");
+            }
+            else {
+                $(".active").slideUp();
+                console.log("else")
+                $(this).siblings().slideDown().addClass("active");
+            }
+            /*
+            $(this).siblings().slideToggle().addClass("active");
+            $(".active").slideDown().removeClass("active");*/
+        })
+        $('#iniciar-recoleccion').click(function () {
+            $.ajax({
+                method: "POST",
+                contentType: "application/json",
+                url: '/recolectar-datos',
+                data: JSON.stringify({
+                    total_data: $("#total_data").text(),
+                    link: $("#actual_link").text(),
+                }),
+                success: async function (data) {
+                    console.log(data);
+                    var processing = true;
+                    while (processing) {
+                        await sleep(2000);
+                        console.log("Esperó")
+                        $.ajax({
+                            method: "POST",
+                            contentType: "application/json",
+                            url: '/preguntar-progreso',
+                            data: JSON.stringify({
+                                //NADA
+                            }),
+                            success: function (data) {
+                                if (data.finished) {
+                                    processing = false;
+                                    datos_finalizados();
+                                    return 0;
+                                }
+                                else {
+                                    elapsed = (data.elapsed / data.total) * 100
+                                    $("#recollecting-bar").attr("style", "width:" + elapsed + "%");
+                                    $("#recollecting-bar-text").html(+ data.elapsed + ' articulos recoletados de ' + data.total + " totales");
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.log("ERROR")
+                            }
+                        })
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("ERROR")
+                }
+            })
+        })
+        $('.modificar-filtro').click(function () {
+            //$("#cargando-filtros").show();
+            location.href = '/buscar?link=' + $(this).siblings('#link').text().trim()
+        })
+    </script>
+    <div id="cargando" class="modal" role="dialog" style="display:none;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Recolectando datos</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="recollecting-bar"
+                            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+                            style="width: 0%">
+                        </div>
+                    </div>
+                    <div id="recollecting-bar-text" style="float:right;">
+                        Obteniendo detalles...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="cargando-filtros" class="modal" role="dialog" style="display:none;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actualizando filtros...</h5>
+                </div>
+                <div class="modal-body">
+                    Aguarde mientras las modificaciones se aplican.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>

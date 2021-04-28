@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <title>Buscador de Mercado Libre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+  <div class="card text-center">
+    <div class="card-header">
+      Buscador de Mercado Libre
+    </div>
+    <h4 class="card-title">
+      Para poder obtener estadísticas de los productos disponibles en Mercado Libre, primero necesitamos realizar una
+      búsqueda.
+    </h4>
+    <h5 class="card-title">
+      Cuánto más específica la búsqueda, menos se tarda en obtenerlos.
+    </h5>
+    <div class="card-body">
+      <div class="form-group">
+        <input type="text" class="form-control text-center" rows="3" id="input_texto"
+          placeholder="Inserta la búsqueda tal como lo harías en la web de ML...">
+        </input>
+        <button type="submit" class="buscar btn btn-primary float-right"
+          onclick="location.href='/buscar?query='+$('#input_texto').val();">Enviar</button>
+      </div>
+    </div>
+  </div>
+  <div id="Cargando" class="card text-center" style="display: None;">
+    <div class="card-header">
+      Obteniendo datos...
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Si no es tu día de suerte, puede demorar 3 minutos.</h5>
+      <p class="card-text">En caso contrario, podrías no llegar a leer esto.</p>
+    </div>
+  </div>
+  </div>
+  </div>
