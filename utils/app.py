@@ -72,7 +72,7 @@ def get_cotizacion():
     return (compra, venta)
 
 
-def moneda(texto, valor, cotizacion):
+def currency(texto, valor, cotizacion):
     dolar_compra = cotizacion[0]
     dolar_venta = cotizacion[1]
 
@@ -81,9 +81,6 @@ def moneda(texto, valor, cotizacion):
 
     elif (texto == "U$S"):
         return (dolar_venta*valor, valor)
-
-    else:
-        print("Hay un error en un artículo que vale " + texto + valor)
 
 
 def get_seller_and_amount_solded(soup_element):

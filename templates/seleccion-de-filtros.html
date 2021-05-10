@@ -140,7 +140,7 @@
             $.ajax({
                 method: "POST",
                 contentType: "application/json",
-                url: '/pedir-datos',
+                url: '/get-data',
                 data: JSON.stringify({
                     //Nada
                 }),
@@ -171,7 +171,7 @@
             $.ajax({
                 method: "POST",
                 contentType: "application/json",
-                url: '/recolectar-datos',
+                url: '/collect-data',
                 data: JSON.stringify({
                     total_data: $("#total_data").text(),
                     link: $("#actual_link").text(),
@@ -185,7 +185,7 @@
                         $.ajax({
                             method: "POST",
                             contentType: "application/json",
-                            url: '/preguntar-progreso',
+                            url: '/ask-progress',
                             data: JSON.stringify({
                                 //NADA
                             }),
@@ -214,7 +214,7 @@
         })
         $('.modificar-filtro').click(function () {
             //$("#cargando-filtros").show();
-            location.href = '/buscar?link=' + $(this).siblings('#link').text().trim()
+            location.href = '/search?link=' + $(this).siblings('#link').text().trim()
         })
     </script>
     <div id="cargando" class="modal" role="dialog" style="display:none;">

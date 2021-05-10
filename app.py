@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from .utils.app import get_options_and_applied_filters, get_search_link
 from .utils.DataCollectorThread import DataCollector
+
 app = Flask(__name__)
 
 search_link = None
@@ -10,8 +11,8 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/buscar')
-def primer_busqueda():
+@app.route('/search')
+def search():
     if request.args.get("query"):
         query = request.args.get("query")
         search_link = get_search_link(query)
@@ -33,33 +34,37 @@ def primer_busqueda():
 
 thread_data = None
 
-@app.route('/recolectar-datos', methods=["POST"])
-def recoleccion_de_datos():
+@app.route('/collect-data', methods=["POST"])
+def collect_data():
     global thread_data
-    # Declaración e inicio.
+    
     link = request.json.get("link")
-    print("link pedido = "+link)
+    
+    #print("link pedido = "+link)
+
     total_data = request.json.get("total_data")
-    print("total_data = "+total_data)
+    
+    #print("total_data = "+total_data)
+
     thread_data = DataCollector(link, total_data)
     thread_data.start()
     return jsonify({"total_data": thread_data.total_data})
-    # Lógica normal
+    
 
-@app.route('/preguntar-progreso', methods=["POST"])
-def preguntar_progreso():
+@app.route('/ask-progress', methods=["POST"])
+def ask_progress():
     global thread_data
     return jsonify({"elapsed": thread_data.processed_data,
                     "total": thread_data.total_data,
                     "finished": thread_data.finished })
 
-@app.route('/pedir-datos', methods=["POST"])
-def pedir_datos():
+@app.route('/get-data', methods=["POST"])
+def get_data():
     global thread_data
     return jsonify(thread_data.collected_data)
 
-@app.route('/aplicar-filtro',methods=['POST'])
-def aplicar_filtro():    
+@app.route('/apply-filter',methods=['POST'])
+def apply_filter():    
     if request.method == "POST":
         link = request.json.get("link")
         print("link="+link)

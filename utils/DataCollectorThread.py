@@ -42,7 +42,7 @@ class DataCollector(threading.Thread):
             for producto in lista_productos:
                 num_in_list += 1
 
-                monedas = utils.moneda(producto.select('.price-tag-symbol')[0].text,
+                currencies = utils.currency(producto.select('.price-tag-symbol')[0].text,
                                        float(producto.select(
                                            '.price-tag-fraction')[0].text.replace('.', '')),
                                        cotizacion)
@@ -52,9 +52,9 @@ class DataCollector(threading.Thread):
                                                                       "lxml"))
 
                 elem = {'titulo': producto.select("h2")[0].text,
-                        'moneda': producto.select('.price-tag-symbol')[0].text,
-                        'pesos': monedas[0],
-                        'dolares': monedas[1],
+                        'currency': producto.select('.price-tag-symbol')[0].text,
+                        'pesos': currencies[0],
+                        'dolares': currencies[1],
                         'vendedor': detailed_data.get("seller_and_amount_solded")[0],
                         'ventas': detailed_data.get("seller_and_amount_solded")[1],
                         'caract_bas': detailed_data.get("basic_features"),
